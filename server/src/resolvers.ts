@@ -1,3 +1,4 @@
+import { Mutation } from "./../../client/node_modules/@apollo/client/react/components/Mutation.d";
 import { Resolvers } from "./types";
 
 export const resolvers: Resolvers = {
@@ -17,6 +18,27 @@ export const resolvers: Resolvers = {
     },
     modules: ({ id }, _, { dataSources }) => {
       return dataSources.trackAPI.getTrackModules(id);
+    },
+  },
+
+  Mutation: {
+    incrementTrackViews: async (_, { id }, { dataSources }) => {
+      try {
+        const track = await dataSources.trackAPI.incrementTrackViews(id);
+        return {
+          code: 200,
+          success: true,
+          message: `Successfully incremented number of views for track ${id}`,
+          track,
+        };
+      } catch (error) {
+        return {
+          code: error.extensions.response.status,
+          success: false,
+          message: error.extensions.response.body,
+          track: null,
+        };
+      }
     },
   },
 };
